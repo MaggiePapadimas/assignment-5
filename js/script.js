@@ -159,13 +159,13 @@ let animals = [
 ];
 // Points
 let $points;
-let pointAmount;
+let points = 0;
 // We need to track the correct answer for each round
 let correctAnimal;
 // We also track all the possibly answers (mostly so we can switch their order around)
 let answers = [];
 
-let commands;
+let command;
 
 // How many possible answers there are per round
 const NUM_OPTIONS = 5;
@@ -180,37 +180,32 @@ $(document).ready(setup);
 function setup() {
   $('#click-to-begin').on('click',startGame);
   $points =$('#points');
+  $points.text('points = ' + points);
+  // Add the text to the page so we can see it
+  $('body').append($points);
 
-  //annyang
-
-  if (annyang) {
-
-    var command = {
+    //annyang
+    command = {
       //whent the player "says say it again", it will repeat
       "Say it again": function() {
         speakAnimal(correctAnimal);
       },
       //when player says "i give up" the game is over and they see their Points
       "I give up": function() {
-        pointAmount = 0;
-        $points.text('Points: ' +pointAmount);
-        newRound();
+        points = 0;
+        setTimeout(newRound(), 1000);
       },
       //player says "i think it is X" it checks answer as if clicking with actual mouse
       "I think it is *guess": function(guess) {
         if (guess === correctAnimal) {
-          pointAmount++;
-          $points.text('points: ' +pointAmount);
-          $(guess).remove();
+          points++;
           newRound();
-        }
-      else {
+        } else {
           speakAnimal(correctAnimal);
-          pointAmount = 0;
-          $points.text('Points: ' +pointAmount)
+          points = 0;
+          pointDisplay();
         }
       }
-    }
   };
 // Add our commands to annyang
 annyang.addCommands(command);
@@ -226,6 +221,14 @@ function startGame() {
   // Start listening. You can call this here, or attach this call to an event, button, etc.
   annyang.start();
 }
+
+//shows points
+  function pointDisplay() {
+    $('#points').remove();
+    let $points = $('<div id="points"></div>');
+    $points.text('points: ' + points);
+    $('body').append($points);
+  }
 
 // newRound()
 //
@@ -249,6 +252,8 @@ function newRound() {
 
   // Say the name of the animal
   speakAnimal(correctAnimal);
+
+  pointDisplay();
 }
 
 // speakAnimal(name)
@@ -296,6 +301,8 @@ function addButton(label) {
     if ($(this).text() === correctAnimal) {
       // Remove all the buttons
       $('.guess').remove();
+      $points.text('Points: '+points);
+      points++;
       // Start a new round
       setTimeout(newRound,1000);
     }
@@ -304,6 +311,7 @@ function addButton(label) {
       $(this).effect('shake');
       // And say the correct animal again to "help" them
       speakAnimal(correctAnimal);
+      points = 0;
     }
   });
 
