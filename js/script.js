@@ -197,10 +197,11 @@ function setup() {
       },
       //player says "i think it is X" it checks answer as if clicking with actual mouse
       "I think it is *guess": function(guess) {
-        if (guess === correctAnimal) {
-          points++;
+        if (guess === correctAnimal){
           newRound();
-        } else {
+          points++;
+        }
+        else {
           speakAnimal(correctAnimal);
           points = 0;
           pointDisplay();
